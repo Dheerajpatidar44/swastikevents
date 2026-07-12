@@ -8,16 +8,20 @@ import WhyChooseUs from './components/WhyChooseUs';
 import Stats from './components/Stats';
 import Testimonials from './components/Testimonials';
 import CTA from './components/CTA';
+import VideoSection from './components/VideoSection';
 import Footer from './components/Footer';
 import GalleryPage from './pages/GalleryPage';
+import WorkInProgressPopup from './components/WorkInProgressPopup';
 
 function HomePage() {
   return (
     <div className="bg-cream-light min-h-screen">
+      <WorkInProgressPopup />
       <Navbar />
       <main>
         <Hero />
         <Services />
+        <VideoSection />
         <Gallery />
         <WhyChooseUs />
         <Stats />

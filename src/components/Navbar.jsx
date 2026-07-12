@@ -40,7 +40,7 @@ export default function Navbar() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <a href="#home" className="flex items-center gap-2 h-16 overflow-visible" onClick={() => handleLinkClick('Home')}>
-            <img src={isScrolled ? "/logo.png" : "/logo_white_feather.png"} alt="Swastik Event & Decoration Logo" className="h-22 sm:h-28 w-auto max-w-none object-contain" />
+            <img src={isScrolled ? "/logo.png" : "/logo_white_feather.png"} alt="Swastik Event & Decoration Logo" className="h-32 sm:h-32 w-auto max-w-none object-contain" />
           </a>
 
           {/* Desktop Nav Links */}
@@ -58,7 +58,7 @@ export default function Navbar() {
                         : 'text-charcoal hover:text-gold-accent after:w-0 hover:after:w-full after:bg-gold-accent'
                       : activeLink === link.name
                         ? 'text-white after:w-0'
-                        : 'text-charcoal hover:text-white after:w-0 hover:after:w-full after:bg-white'
+                        : 'text-white/90 hover:text-gold-accent after:w-0 hover:after:w-full after:bg-gold-accent'
                   }`}
                 >
                   {link.name}
@@ -75,7 +75,7 @@ export default function Navbar() {
                         : 'text-charcoal hover:text-gold-accent after:w-0 hover:after:w-full after:bg-gold-accent'
                       : activeLink === link.name
                         ? 'text-white after:w-0'
-                        : 'text-charcoal hover:text-white after:w-0 hover:after:w-full after:bg-white'
+                        : 'text-white/90 hover:text-gold-accent after:w-0 hover:after:w-full after:bg-gold-accent'
                   }`}
                 >
                   {link.name}

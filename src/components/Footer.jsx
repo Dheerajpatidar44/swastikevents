@@ -18,7 +18,7 @@ export default function Footer() {
           {/* Column 1: Logo & About (3/12 cols) */}
           <div className="lg:col-span-3 flex flex-col items-start text-left">
             <a href="#home" className="flex items-center gap-2 group mb-4">
-              <img src="/logo_white_feather.png" alt="Swastik Event & Decoration Logo" className="h-14 sm:h-18 w-auto object-contain transition-transform duration-300 group-hover:scale-[1.03]" />
+              <img src="/logo_white_feather.png" alt="Swastik Event & Decoration Logo" className="h-26 sm:h-34 w-auto object-contain transition-transform duration-300 group-hover:scale-[1.03]" />
             </a>
             <p className="font-sans text-xs sm:text-sm text-white/70 leading-relaxed mb-6 max-w-xs">
               We create unforgettable experiences with creativity, passion and perfect execution.

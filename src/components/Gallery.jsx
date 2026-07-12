@@ -1,162 +1,111 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight } from 'lucide-react';
-
-const stackImages = [
-  'https://images.pexels.com/photos/931177/pexels-photo-931177.jpeg?auto=compress&cs=tinysrgb&w=900',
-  'https://images.pexels.com/photos/169198/pexels-photo-169198.jpeg?auto=compress&cs=tinysrgb&w=900',
-  'https://images.pexels.com/photos/2306281/pexels-photo-2306281.jpeg?auto=compress&cs=tinysrgb&w=900',
-  'https://images.pexels.com/photos/1128782/pexels-photo-1128782.jpeg?auto=compress&cs=tinysrgb&w=900',
-  'https://images.pexels.com/photos/3014856/pexels-photo-3014856.jpeg?auto=compress&cs=tinysrgb&w=900',
-  'https://images.pexels.com/photos/1444442/pexels-photo-1444442.jpeg?auto=compress&cs=tinysrgb&w=900',
-];
-
-const TOTAL = stackImages.length;
+import { ArrowUpRight } from 'lucide-react';
 
 export default function Gallery() {
-  const sectionRef = useRef(null);
-  // activeIndex = floating point 0 → TOTAL-1 driven by scroll
-  const [activeIndex, setActiveIndex] = useState(0);
-
-  useEffect(() => {
-    const onScroll = () => {
-      if (!sectionRef.current) return;
-      const rect = sectionRef.current.getBoundingClientRect();
-      const scrollable = rect.height - window.innerHeight;
-      const scrolled = Math.max(-rect.top, 0);
-      // Maps scroll 0→scrollable to index 0→TOTAL-1
-      const idx = (scrolled / scrollable) * (TOTAL - 1);
-      setActiveIndex(Math.min(Math.max(idx, 0), TOTAL - 1));
-    };
-    window.addEventListener('scroll', onScroll, { passive: true });
-    onScroll();
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
-
   return (
-    <section
-      id="gallery"
-      ref={sectionRef}
-      className="relative"
-      // Each card gets ~80vh of scroll distance
-      style={{ height: `${TOTAL * 80 + 60}vh` }}
-    >
-      {/* ── Sticky viewport ── */}
-      <div className="sticky top-0 h-screen flex flex-col items-center justify-center overflow-hidden">
+    <section id="gallery" className="py-20 bg-white px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto">
 
-        {/* Section Header */}
-        <div className="text-center mb-10 relative z-10 px-4">
-          <span className="font-sans text-xs font-bold tracking-[0.3em] text-gold-accent uppercase">Portfolio</span>
-          <h2 className="font-serif text-4xl sm:text-5xl font-extrabold text-charcoal mt-2 leading-tight">
-            Moments We Proudly Created
-          </h2>
-          <div className="flex items-center justify-center gap-3 mt-3">
-            <span className="h-px w-10 bg-gold-accent/30" />
-            <span className="text-gold-accent/50 text-xs">✦</span>
-            <span className="h-px w-10 bg-gold-accent/30" />
+        {/* Header Block: Left Title & Right CTA Button */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+          <div className="text-left">
+            <h2 className="font-serif text-4xl sm:text-5xl font-normal text-charcoal leading-tight">
+              Fascinating Moments
+            </h2>
+            <p className="font-sans text-sm text-charcoal/60 mt-2">
+              See all memories of weddings
+            </p>
+          </div>
+
+          <div className="flex items-center gap-3 self-start md:self-end">
+            <Link to="/gallery" className="flex items-center gap-3 group">
+              <div className="bg-[#F7C35F] hover:bg-gold-accent text-charcoal font-sans text-sm sm:text-base font-semibold py-3 px-6 rounded-full shadow-md transition-colors duration-300">
+                Explore Gallery Page
+              </div>
+              <div className="w-10 h-10 rounded-full bg-white text-charcoal border border-stone-200/60 flex items-center justify-center shadow-md transition-transform duration-300 group-hover:scale-105 group-hover:bg-[#F7C35F] flex-shrink-0">
+                <ArrowUpRight className="w-4 h-4" />
+              </div>
+            </Link>
           </div>
         </div>
 
-        {/* ── Card Deck ── */}
         {/*
-          Layout logic:
-          - Card at activeIndex → center (translateX 0), full opacity, full scale
-          - Card at activeIndex+1 → peeks from right (+55% of card width), slightly smaller
-          - Card at activeIndex-1 → peeks from left  (-55%), slightly smaller
-          - All other cards → hidden off-screen
-          Cards clip overflow at the section boundary so only the peek is visible
+          ── Screenshot-accurate layout ──
+          Left column (col-span-7):  Top image (shorter) | Bottom image (taller)
+          Right column (col-span-5): Top image (taller)  | Bottom image (very tall, extends further)
+
+          Achieved using CSS Grid with named row tracks of different heights.
         */}
         <div
-          className="relative z-10 w-full flex items-center justify-center"
-          style={{ height: 'min(460px, 58vh)' }}
+          className="hidden md:grid gap-4"
+          style={{
+            gridTemplateColumns: '7fr 5fr',
+            gridTemplateRows: '180px 220px',
+          }}
         >
-          {stackImages.map((src, i) => {
-            // Distance from current active position
-            const dist = i - activeIndex;
+          {/* TOP-LEFT: Landscape (sunset couple) */}
+          <div className="rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300">
+            <img
+              src="https://images.pexels.com/photos/1024996/pexels-photo-1024996.jpeg?auto=compress&cs=tinysrgb&w=1200"
+              alt="Beautiful Wedding Sunset"
+              className="w-full h-full object-cover hover:scale-[1.04] transition-transform duration-500"
+              loading="lazy"
+            />
+          </div>
 
-            // Only render cards within visible range (-1.5 to +1.5 distance)
-            const isVisible = dist > -1.8 && dist < 1.8;
-            if (!isVisible) return null;
-
-            // Card dimensions
-            const cardW = Math.min(320, window.innerWidth * 0.78);
-
-            // Horizontal offset: 0 = center, ±1 = one card width to side
-            // We show next card peeking at ~58% offset so only ~42% visible
-            const peekOffset = cardW * 0.58;
-            const translateX = dist * peekOffset;
-
-            // Scale: active = 1, adjacent = 0.93
-            const absDist = Math.abs(dist);
-            const scale = 1 - absDist * 0.07;
-
-            // Brightness: active = 100%, adjacent = 75%
-            const brightness = 1 - absDist * 0.25;
-
-            // zIndex: closest to center = highest
-            const zIndex = Math.round(100 - Math.abs(dist) * 10);
-
-            return (
-              <div
-                key={i}
-                className="absolute rounded-2xl overflow-hidden"
-                style={{
-                  width: cardW,
-                  height: '100%',
-                  transform: `translateX(${translateX}px) scale(${scale})`,
-                  zIndex,
-                  filter: `brightness(${brightness})`,
-                  transition: 'transform 0.35s cubic-bezier(0.25,0.46,0.45,0.94), filter 0.35s ease',
-                  transformOrigin: 'center center',
-                  // No shadow on non-active cards
-                  boxShadow: absDist < 0.3
-                    ? '0 20px 60px rgba(0,0,0,0.18)'
-                    : 'none',
-                }}
-              >
-                <img
-                  src={src}
-                  alt={`Gallery ${i + 1}`}
-                  className="w-full h-full object-cover"
-                  loading="lazy"
-                />
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Progress Dots */}
-        <div className="flex items-center gap-2 mt-8 relative z-10">
-          {stackImages.map((_, i) => {
-            const dist = Math.abs(i - activeIndex);
-            const isActive = dist < 0.5;
-            return (
-              <div
-                key={i}
-                className="rounded-full transition-all duration-300"
-                style={{
-                  width: isActive ? '24px' : '7px',
-                  height: '7px',
-                  backgroundColor: isActive ? 'var(--color-gold-accent, #c5a870)' : '#d1c5ae',
-                }}
-              />
-            );
-          })}
-        </div>
-
-        {/* View Full Gallery CTA */}
-        <div className="mt-8 relative z-10">
-          <Link
-            to="/gallery"
-            className="inline-flex items-center gap-2.5 px-8 py-3 border border-gold-accent text-gold-accent font-sans text-sm font-semibold rounded-full hover:bg-gold-accent hover:text-white transition-all duration-300 group"
+          {/* TOP-RIGHT: Portrait (mehndi detail) – spans BOTH rows so it's taller */}
+          <div
+            className="rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300"
+            style={{ gridRow: '1 / 3' }}
           >
-            View Full Gallery
-            <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
-          </Link>
+            <img
+              src="https://images.pexels.com/photos/1444442/pexels-photo-1444442.jpeg?auto=compress&cs=tinysrgb&w=900"
+              alt="Mehndi Bridal Detail"
+              className="w-full h-full object-cover hover:scale-[1.04] transition-transform duration-500"
+              loading="lazy"
+            />
+          </div>
+
+          {/* BOTTOM-LEFT: Portrait (family walking) */}
+          <div className="rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300">
+            <img
+              src="https://images.pexels.com/photos/2253879/pexels-photo-2253879.jpeg?auto=compress&cs=tinysrgb&w=900"
+              alt="Happy Family Walking"
+              className="w-full h-full object-cover hover:scale-[1.04] transition-transform duration-500"
+              loading="lazy"
+            />
+          </div>
+
+        </div>
+
+        {/* Third image row: wide flowers image below the 2-col grid */}
+        <div className="hidden md:block mt-4">
+          <div className="rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300" style={{ height: '200px' }}>
+            <img
+              src="https://images.pexels.com/photos/931177/pexels-photo-931177.jpeg?auto=compress&cs=tinysrgb&w=1400"
+              alt="Pink Floral Arrangement"
+              className="w-full h-full object-cover hover:scale-[1.04] transition-transform duration-500"
+              loading="lazy"
+            />
+          </div>
+        </div>
+
+        {/* ── Mobile Layout ── */}
+        <div className="flex flex-col gap-4 md:hidden">
+          {[
+            { src: "https://images.pexels.com/photos/1024996/pexels-photo-1024996.jpeg?auto=compress&cs=tinysrgb&w=800", alt: "Beautiful Wedding Sunset" },
+            { src: "https://images.pexels.com/photos/1444442/pexels-photo-1444442.jpeg?auto=compress&cs=tinysrgb&w=800", alt: "Mehndi Bridal Detail" },
+            { src: "https://images.pexels.com/photos/2253879/pexels-photo-2253879.jpeg?auto=compress&cs=tinysrgb&w=800", alt: "Happy Family Walking" },
+            { src: "https://images.pexels.com/photos/931177/pexels-photo-931177.jpeg?auto=compress&cs=tinysrgb&w=800", alt: "Pink Floral Arrangement" },
+          ].map((img, i) => (
+            <div key={i} className="aspect-[4/3] rounded-2xl overflow-hidden shadow-sm">
+              <img src={img.src} alt={img.alt} className="w-full h-full object-cover" loading="lazy" />
+            </div>
+          ))}
         </div>
 
       </div>
     </section>
   );
 }
-
